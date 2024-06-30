@@ -1,38 +1,42 @@
 
 services:
   postgres:
+    platform: linux/amd64
     image: lmmdock/postgres-multi
     container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USERS: "users:users|transactions:transactions"
       POSTGRES_DATABASES: "users-db:users|transactions-db:transactions"
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U users -d users-db && pg_isready -U transactions -d transactions-db"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - wallet-transactions
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   zookeeper:
+    platform: linux/amd64
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper
     restart: always
     ports:
-      - "2181:2181"
+      - 2181:2181
     networks:
       - wallet-transactions
 
-  kafka1:
+  kafka:
+    platform: linux/amd64
     image: wurstmeister/kafka:latest
     container_name: kafka1
+    restart: always
     ports:
-      - "9092:9092"
+      - 9092:9092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -40,73 +44,66 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_CREATE_TOPICS: "user-created:1:2"
+      KAFKA_CREATE_TOPICS: "user-created:1:1"
       KAFKA_MIN_INSYNC_REPLICAS: 1
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - zookeeper
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka:9092" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - wallet-transactions
-
-  kafka2:
-    image: wurstmeister/kafka:latest
-    container_name: kafka2
-    ports:
-      - "9093:9093"
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_CREATE_TOPICS: "user-created:1:2"
-      KAFKA_MIN_INSYNC_REPLICAS: 1
-    restart: always
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - zookeeper
-    networks:
-      - wallet-transactions
+      - kafka_data:/var/run/docker.sock
 
-  transactions-service:
-    build: ./transactions-service
-    container_name: transactions-service-app
-    restart: always
-    depends_on:
-      - kafka1
-      - kafka2
-      - postgres
-    networks:
-      - wallet-transactions
-
-  users-service:
-    build: ./users-service
-    container_name: users-service-app
-    ports:
-      - "8080:8080"
-    restart: always
-    depends_on:
-      - kafka1
-      - kafka2
-      - postgres
-    networks:
-      - wallet-transactions
   nats:
+    platform: linux/amd64
     image: nats
     container_name: nats
     restart: always
     ports:
-      - "8222:8222"
+      - 8222:8222
     command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222 "
     networks:
       - wallet-transactions
+
+  transactions-service:
+    platform: linux/amd64
+    build: ./transactions-service
+    container_name: transactions-service-app
+    restart: always
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    networks:
+      - wallet-transactions
+
+  users-service:
+    platform: linux/amd64
+    build: ./users-service
+    container_name: users-service-app
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - wallet-transactions
+
 networks:
   wallet-transactions:
     driver: bridge
 
 volumes:
   postgres_data:
+  kafka_data:
+    driver: local
