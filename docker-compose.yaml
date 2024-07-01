@@ -12,8 +12,8 @@ services:
       POSTGRES_DATABASES: "users-db:users|transactions-db:transactions"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U users -d users-db && pg_isready -U transactions -d transactions-db"]
-      interval: 2s
-      timeout: 5s
+      interval: 5s
+      timeout: 10s
       retries: 5
     networks:
       - wallet-transactions
