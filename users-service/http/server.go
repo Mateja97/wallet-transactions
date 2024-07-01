@@ -6,12 +6,14 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/segmentio/kafka-go"
 	"net/http"
+	"sync"
 )
 
 type Server struct {
 	db          *gorm.DB
 	kafkaWriter *kafka.Writer
 
+	mu         sync.Mutex
 	httpServer *http.Server
 	natsConn   *nats.Conn
 }

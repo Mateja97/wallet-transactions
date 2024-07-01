@@ -26,8 +26,8 @@ func (srv *Server) transferMoney(w http.ResponseWriter, r *http.Request) {
 
 	var request TransferMoneyRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil || request.FromUserID == "" || request.ToUserID == "" || request.Amount <= 0 {
-		http.Error(w, "Invalid input", http.StatusBadRequest)
+	if err != nil || request.FromUserID == "" || request.ToUserID == "" || request.Amount <= 0 || request.ToUserID == request.FromUserID {
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 	tx := srv.db.Begin()

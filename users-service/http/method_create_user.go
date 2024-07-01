@@ -27,6 +27,8 @@ func (srv *Server) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 	var createUserRequest CreateUserRequest
 
 	err := json.NewDecoder(r.Body).Decode(&createUserRequest)

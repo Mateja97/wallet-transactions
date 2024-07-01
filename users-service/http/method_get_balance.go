@@ -85,7 +85,7 @@ func (srv *Server) getBalance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(BalanceResponse{
 		Email:   user.Email,
-		Balance: fmt.Sprintf("%.1f", natsResponse.Balance),
+		Balance: fmt.Sprintf("%.3f", natsResponse.Balance),
 	})
 	if err != nil {
 		log.Printf("error encoding balance response: %v", err)
