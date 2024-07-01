@@ -50,8 +50,8 @@ services:
       - zookeeper
     healthcheck:
       test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka:9092" ]
-      interval: 5s
-      timeout: 10s
+      interval: 10s
+      timeout: 30s
       retries: 5
     networks:
       - wallet-transactions
