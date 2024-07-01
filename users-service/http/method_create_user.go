@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 	"log"
@@ -13,6 +12,12 @@ import (
 
 type CreateUserRequest struct {
 	Email string `json:"email"`
+}
+
+type CreateUserResponse struct {
+	UserID    string    `json:"user_id"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (srv *Server) createUser(w http.ResponseWriter, r *http.Request) {
@@ -82,5 +87,13 @@ func (srv *Server) createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf("User %s created", user.ID)))
+	err = json.NewEncoder(w).Encode(CreateUserResponse{
+		UserID:    user.ID,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	})
+	if err != nil {
+		log.Printf("error encoding balance response: %v", err)
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+	}
 }
