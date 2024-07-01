@@ -49,7 +49,8 @@ Transactions-service
 ### User-service
 
 #### 1. Create User
-- **Endpoint**: `/createUser`
+This endpoint creates a new user in the `users` table and pushes a "user-created" event into Kafka.
+- **Endpoint**: `:8080/createUser`
 - **Method**: `POST`
 - **Request Body**:
   ```json
@@ -66,10 +67,9 @@ Transactions-service
   }
   ```
 
-This endpoint creates a new user in the `users` table and pushes a "user-created" event into Kafka.
-
 #### 2. Get Balance
-- **Endpoint**: `/balance`
+This endpoint fetches the user's latest balance by making a service-to-service call using NATS to the `transactions-service`.
+- **Endpoint**: `:8080/getBalance`
 - **Method**: `GET`
 - **Request Body**:
   ```json
@@ -85,12 +85,12 @@ This endpoint creates a new user in the `users` table and pushes a "user-created
   }
   ```
 
-This endpoint fetches the user's latest balance by making a service-to-service call using NATS to the `transactions-service`.
 
 ### Transactions-service
 
 #### 1. Add Money
-- **Endpoint**: `/addMoney`
+This endpoint credits money to a user's account and updates the balance in the `user` table. It also records the transaction.
+- **Endpoint**: `:8081/addMoney`
 - **Method**: `POST`
 - **Request Body**:
   ```json
@@ -106,10 +106,10 @@ This endpoint fetches the user's latest balance by making a service-to-service c
   }
   ```
 
-This endpoint credits money to a user's account and updates the balance in the `user` table. It also records the transaction.
 
 #### 2. Transfer Money
-- **Endpoint**: `/transferMoney`
+This endpoint transfers funds from one user to another and records the transactions for both users.
+- **Endpoint**: `:8081/transferMoney`
 - **Method**: `POST`
 - **Request Body**:
   ```json
@@ -119,15 +119,6 @@ This endpoint credits money to a user's account and updates the balance in the `
     "amount_to_transfer": 50.0
   }
   ```
-- **Response Body**:
-  ```json
-  {
-    "from_user_balance": 150.0,
-    "to_user_balance": 250.0
-  }
-  ```
-
-This endpoint transfers funds from one user to another and records the transactions for both users.
 
 ## Concurrency and Idempotency
 
