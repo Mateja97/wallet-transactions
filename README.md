@@ -133,11 +133,13 @@ The system ensures concurrency safety and idempotency by using a `sync.Map` to m
 
 ### Transactions-service `users` table:
 - `user_id`: UUID (Primary Key)
-- `balance`: DECIMAL
+- `balance`: NUMERIC
 - `created_at`: TIMESTAMP
 
 ### Transactions-service `transactions` table:
 - `id`: UUID (Primary Key)
 - `user_id`: UUID (Foreign Key)
-- `amount`: DECIMAL
+- `balance_change`: NUMERIC
+- `old_balance`: NUMERIC
+- `new_balance`: NUMERIC
 - `timestamp`: TIMESTAMP
