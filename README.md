@@ -126,7 +126,7 @@ This endpoint transfers funds from one user to another and records the transacti
   {
     "from_user_id": "uuid",
     "to_user_id": "uuid",
-    "amount_to_transfer": 50.0
+    "amount": 50.0
   }
   ```
 

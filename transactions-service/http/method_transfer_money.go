@@ -14,7 +14,7 @@ import (
 type TransferMoneyRequest struct {
 	FromUserID string  `json:"from_user_id"`
 	ToUserID   string  `json:"to_user_id"`
-	Amount     float64 `json:"amount_to_transfer"`
+	Amount     float64 `json:"amount"`
 }
 
 func (srv *Server) transferMoney(w http.ResponseWriter, r *http.Request) {
