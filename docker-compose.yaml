@@ -54,8 +54,6 @@ services:
       retries: 5
     networks:
       - wallet-transactions
-    volumes:
-      - kafka_data:/var/run/docker.sock
 
   nats:
     platform: linux/amd64
@@ -106,4 +104,3 @@ networks:
 
 volumes:
   postgres_data:
-  kafka_data:
