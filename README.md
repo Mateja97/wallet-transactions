@@ -33,11 +33,13 @@ cd <repository_directory>
 Ensure Docker and Docker Compose are installed on your system and Docker daemon is running.
 
 Environment Variables
+
 Create a .env file in the root of the project directory and add the following line to set the platform dynamically:
 ```env
 PLATFORM=linux/amd64
 ```
 Start Services
+
 Use the following commands to start the services:
 ```bash
 docker-compose up -d
