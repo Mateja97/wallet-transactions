@@ -37,5 +37,6 @@ func Start() error {
 }
 
 func Shutdown(ctx context.Context) error {
+	srv.natsConn.Close()
 	return srv.httpServer.Shutdown(ctx)
 }
