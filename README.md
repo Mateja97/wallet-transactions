@@ -46,12 +46,12 @@ docker-compose up -d
 ```
 This will start the following containers:
 
-PostgreSQL
-Kafka
-Zookeeper
-NATS Server
-Users-service
-Transactions-service
+- **PostgreSQL**
+- **Kafka**
+- **Zookeeper**
+- **NATS Server**
+- **Users-service**
+- **Transactions-service**
 
 
 ## API Endpoints
