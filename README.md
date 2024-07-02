@@ -30,7 +30,7 @@ cd <repository_directory>
 ```
 
 ### Step 2: Docker Setup
-Ensure Docker and Docker Compose are installed on your system. Use the following commands to start the services:
+Ensure Docker and Docker Compose are installed on your system and Docker daemon is running. Use the following commands to start the services:
 ```bash
 docker-compose up -d
 ```
