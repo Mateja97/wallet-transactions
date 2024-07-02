@@ -1,7 +1,6 @@
-
 services:
   postgres:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     image: lmmdock/postgres-multi
     container_name: postgres
     restart: always
@@ -21,7 +20,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   zookeeper:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper
     restart: always
@@ -31,7 +30,7 @@ services:
       - wallet-transactions
 
   kafka:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     image: wurstmeister/kafka:latest
     container_name: kafka
     restart: always
@@ -59,7 +58,7 @@ services:
       - kafka_data:/var/run/docker.sock
 
   nats:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     image: nats
     container_name: nats
     restart: always
@@ -70,7 +69,7 @@ services:
       - wallet-transactions
 
   transactions-service:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     build: ./transactions-service
     container_name: transactions-service-app
     restart: always
@@ -87,7 +86,7 @@ services:
       - wallet-transactions
 
   users-service:
-    platform: linux/amd64
+    platform: ${PLATFORM}
     build: ./users-service
     container_name: users-service-app
     restart: always
